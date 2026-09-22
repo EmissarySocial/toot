@@ -17,11 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0
-   
-    - name: Nil panic checks
-      uses: qbaware/nilaway-action@18bae1177e15ef2cc9583baa872c43c50ad84d9e # v0.0.14
+
+    # nilaway needs Go 1.26, and setup-go sets GOTOOLCHAIN=local, so this module's
+    # older go directive would fail the install instead of downloading.  See go-quality ci.md.
+    - name: Set up Go
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
-        package-to-scan: ./...
+        go-version: "1.26.x"
+
+    # Pin nilaway to an explicit version (it publishes only pseudo-versions,
+    # no semver tags) so the installed tool is predictable, not @latest.
+    - name: Install NilAway
+      run: go install go.uber.org/nilaway/cmd/nilaway@v0.0.0-20260918162853-acb8859b9031
+
+    - name: Nil panic checks
+      run: nilaway ./...

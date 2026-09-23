@@ -18,6 +18,10 @@ const GetAccount_VerifyCredentials = "/api/v1/accounts/verify_credentials"
 // https://docs.joinmastodon.org/methods/accounts/#update_credentials
 const PatchAccount_UpdateCredentials = "/api/v1/accounts/update_credentials"
 
+// GetAccounts is the route for GET /api/v1/accounts, a batch lookup by id[].
+// https://docs.joinmastodon.org/methods/accounts/#index
+const GetAccounts = "/api/v1/accounts"
+
 // GetAccount is the route for GET /api/v1/accounts/:id.
 // https://docs.joinmastodon.org/methods/accounts/#get
 const GetAccount = "/api/v1/accounts/:id"
@@ -33,6 +37,11 @@ const GetAccount_Followers = "/api/v1/accounts/:id/followers"
 // GetAccount_Following is the route for GET /api/v1/accounts/:id/following.
 // https://docs.joinmastodon.org/methods/accounts/#following
 const GetAccount_Following = "/api/v1/accounts/:id/following"
+
+// GetAccount_Endorsements is the route for GET /api/v1/accounts/:id/endorsements
+// (accounts featured on this account's profile). Added in the Mastodon API at
+// v4.4.0 -- see https://docs.joinmastodon.org/methods/accounts/#endorsements.
+const GetAccount_Endorsements = "/api/v1/accounts/:id/endorsements"
 
 // GetAccount_FeaturedTags is the route for GET /api/v1/accounts/:id/featured_tags.
 // https://docs.joinmastodon.org/methods/accounts/#featured_tags
@@ -86,9 +95,11 @@ const PostAccount_Note = "/api/v1/accounts/:id/note"
 // https://docs.joinmastodon.org/methods/accounts/#relationships
 const GetAccount_Relationships = "/api/v1/accounts/relationships"
 
-// GetAccount_FamiliarFollowers is the route for GET /api/v1/accounts/:id/familiar_followers.
+// GetAccount_FamiliarFollowers is the route for GET /api/v1/accounts/familiar_followers.
+// This is a batch lookup (?id[]=1&id[]=2), not nested under a single account -- see
+// GetAccount_Relationships just above for the same shape.
 // https://docs.joinmastodon.org/methods/accounts/#familiar_followers
-const GetAccount_FamiliarFollowers = "/api/v1/accounts/:id/familiar_followers"
+const GetAccount_FamiliarFollowers = "/api/v1/accounts/familiar_followers"
 
 // GetAccount_Search is the route for GET /api/v1/accounts/search.
 // https://docs.joinmastodon.org/methods/accounts/#search

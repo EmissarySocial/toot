@@ -1,5 +1,7 @@
 package txn
 
+import "mime/multipart"
+
 /******************************************
  * Accounts API Methods
  * Methods concerning accounts and profiles
@@ -26,15 +28,18 @@ type GetAccount_VerifyCredentials struct {
 
 // PatchAccount_UpdateCredentials is the input for PATCH /api/v1/accounts/update_credentials.
 // https://docs.joinmastodon.org/methods/accounts/#update_credentials
+//
+// Fields a client leaves out are nil, so a server can tell "not sent" from an empty or false value.
+// Avatar and Header are the uploaded image files themselves (multipart/form-data).
 type PatchAccount_UpdateCredentials struct {
-	Host         string `header:"Host"`
-	DisplayName  string `form:"display_name"`
-	Note         string `form:"note"`
-	Avatar       string `form:"avatar"`
-	Header       string `form:"header"`
-	Locked       bool   `form:"locked"`
-	Bot          bool   `form:"bot"`
-	Discoverable bool   `form:"discoverable"`
+	Host         string                `header:"Host"`
+	DisplayName  *string               `form:"display_name"`
+	Note         *string               `form:"note"`
+	Avatar       *multipart.FileHeader `form:"avatar"`
+	Header       *multipart.FileHeader `form:"header"`
+	Locked       *bool                 `form:"locked"`
+	Bot          *bool                 `form:"bot"`
+	Discoverable *bool                 `form:"discoverable"`
 }
 
 // GetAccounts is the input for GET /api/v1/accounts, a batch lookup that returns []Account.

@@ -19,6 +19,17 @@ type GetTimeline_Public struct {
 	Limit     int64  `query:"limit"`
 }
 
+// QueryPage implements the QueryPager interface, returning
+// the QueryPage data embedded in this transaction
+func (t GetTimeline_Public) QueryPage() QueryPage {
+	return QueryPage{
+		MaxID:   t.MaxID,
+		SinceID: t.SinceID,
+		MinID:   t.MinID,
+		Limit:   t.Limit,
+	}
+}
+
 // GetTimeline_Hashtag is the input for GET /api/v1/timelines/tag/:hashtag, which returns []Status.
 // https://docs.joinmastodon.org/methods/timelines/#tag
 type GetTimeline_Hashtag struct {

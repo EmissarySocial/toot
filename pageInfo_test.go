@@ -3,6 +3,7 @@ package toot
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -79,13 +80,13 @@ func TestPageInfo_MaxIDBeatsOffset(t *testing.T) {
 	}
 }
 
-// The base URL supplies the path only; each link writes its own query string.
+// Each link writes its own paging cursor, replacing the request's; other parameters are kept.
 func TestPageInfo_QueryStringIsReplaced(t *testing.T) {
 
 	header := make(http.Header)
 	PageInfo{MaxID: "ZZZ"}.SetHeader(header, "/api/v1/notifications?max_id=OLD&limit=20")
 
-	expected := `</api/v1/notifications?max_id=ZZZ>; rel="next"`
+	expected := `</api/v1/notifications?max_id=ZZZ&limit=20>; rel="next"`
 
 	if got := header.Get("Link"); got != expected {
 		t.Errorf("expected %q, got %q", expected, got)
@@ -126,10 +127,36 @@ func TestPageInfo_SetHeadersFromClientResponse(t *testing.T) {
 
 	PageInfo{MinID: "AAA", MaxID: "ZZZ"}.SetHeaders(response)
 
-	expected := `<https://example.com/api/v1/notifications?max_id=ZZZ>; rel="next", ` +
-		`<https://example.com/api/v1/notifications?min_id=AAA>; rel="prev"`
+	// The request's own limit stays on each link, as Mastodon's does
+	expected := `<https://example.com/api/v1/notifications?max_id=ZZZ&limit=20>; rel="next", ` +
+		`<https://example.com/api/v1/notifications?min_id=AAA&limit=20>; rel="prev"`
 
 	if got := response.Header.Get("Link"); got != expected {
 		t.Errorf("expected %q, got %q", expected, got)
+	}
+}
+
+// TestPageInfo_SetHeader_KeepsFilters confirms a request's filters carry onto the next and previous
+// links, while its own paging cursors are replaced.
+func TestPageInfo_SetHeader_KeepsFilters(t *testing.T) {
+
+	header := make(http.Header)
+	PageInfo{MaxID: "ZZZ", MinID: "AAA"}.SetHeader(header, "https://example.com/api/v1/accounts/1/statuses?only_media=true&exclude_replies=true&max_id=OLD&limit=20")
+
+	link := header.Get("Link")
+
+	expectedNext := `<https://example.com/api/v1/accounts/1/statuses?max_id=ZZZ&exclude_replies=true&limit=20&only_media=true>; rel="next"`
+	expectedPrev := `<https://example.com/api/v1/accounts/1/statuses?min_id=AAA&exclude_replies=true&limit=20&only_media=true>; rel="prev"`
+
+	if !strings.Contains(link, expectedNext) {
+		t.Errorf("next link should keep the filters\nwant: %s\ngot:  %s", expectedNext, link)
+	}
+
+	if !strings.Contains(link, expectedPrev) {
+		t.Errorf("previous link should keep the filters\nwant: %s\ngot:  %s", expectedPrev, link)
+	}
+
+	if strings.Contains(link, "max_id=OLD") {
+		t.Errorf("the request's own cursor should be replaced, got: %s", link)
 	}
 }

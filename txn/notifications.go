@@ -14,8 +14,8 @@ type GetNotifications struct {
 	SinceID      string   `query:"since_id"`
 	MinID        string   `query:"min_id"`
 	Limit        int64    `query:"limit"`
-	Types        []string `query:"types"`
-	ExcludeTypes []string `query:"exclude_types"`
+	Types        []string `query:"types[]"`
+	ExcludeTypes []string `query:"exclude_types[]"`
 	AccountID    string   `query:"account_id"`
 }
 
@@ -55,8 +55,8 @@ type PostNotification_Dismiss struct {
 type GetNotifications_UnreadCount struct {
 	Host         string   `header:"Host"`
 	Limit        int      `query:"limit"`
-	Types        []string `query:"types"`
-	ExcludeTypes []string `query:"exclude_types"`
+	Types        []string `query:"types[]"`
+	ExcludeTypes []string `query:"exclude_types[]"`
 	AccountID    string   `query:"account_id"`
 }
 

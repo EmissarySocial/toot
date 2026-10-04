@@ -154,6 +154,8 @@ type API[AuthToken ScopesGetter] struct {
 
 	// https://docs.joinmastodon.org/methods/media/
 	PostMedia func(AuthToken, txn.PostMedia) (object.MediaAttachment, error)
+	GetMedia  func(AuthToken, txn.GetMedia) (object.MediaAttachment, error)
+	PutMedia  func(AuthToken, txn.PutMedia) (object.MediaAttachment, error)
 
 	// https://docs.joinmastodon.org/methods/mutes/
 	GetMutes func(AuthToken, txn.GetMutes) ([]object.Account, PageInfo, error)
@@ -219,7 +221,7 @@ type API[AuthToken ScopesGetter] struct {
 	// https://docs.joinmastodon.org/methods/statuses/#create
 	PostStatus             func(AuthToken, txn.PostStatus) (object.Status, error)
 	GetStatus              func(AuthToken, txn.GetStatus) (object.Status, error)
-	DeleteStatus           func(AuthToken, txn.DeleteStatus) (struct{}, error)
+	DeleteStatus           func(AuthToken, txn.DeleteStatus) (object.Status, error)
 	GetStatus_Context      func(AuthToken, txn.GetStatus_Context) (object.Context, error)
 	PostStatus_Translate   func(AuthToken, txn.PostStatus_Translate) (object.Translation, error)
 	GetStatus_RebloggedBy  func(AuthToken, txn.GetStatus_RebloggedBy) ([]object.Account, PageInfo, error)

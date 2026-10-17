@@ -19,10 +19,10 @@ type PostMarker struct {
 	Host string `header:"Host"`
 	Home struct {
 		Host       string `header:"Host"`
-		LastReadID string `form:"last_read_id"`
-	} `form:"home"`
+		LastReadID string `form:"last_read_id" json:"last_read_id"`
+	} `form:"home" json:"home"`
 	Notifications struct {
 		Host       string `header:"Host"`
-		LastReadID string `form:"last_read_id"`
-	} `form:"notifications"`
+		LastReadID string `form:"last_read_id" json:"last_read_id"`
+	} `form:"notifications" json:"notifications"`
 }

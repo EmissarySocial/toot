@@ -23,9 +23,9 @@ type GetList struct {
 // https://docs.joinmastodon.org/methods/lists/#create
 type PostList struct {
 	Host          string `header:"Host"`
-	Title         string `form:"title"`
-	RepliesPolicy string `form:"replies_policy"`
-	Exclusive     bool   `form:"exclusive"`
+	Title         string `form:"title" json:"title"`
+	RepliesPolicy string `form:"replies_policy" json:"replies_policy"`
+	Exclusive     bool   `form:"exclusive" json:"exclusive"`
 }
 
 // PutList is the input for PUT /api/v1/lists/:id, which returns List.
@@ -33,8 +33,8 @@ type PostList struct {
 type PutList struct {
 	Host          string `header:"Host"`
 	ID            string `param:"id"`
-	Title         string `form:"title"`
-	RepliesPolicy string `form:"replies_policy"`
+	Title         string `form:"title" json:"title"`
+	RepliesPolicy string `form:"replies_policy" json:"replies_policy"`
 }
 
 // DeleteList is the input for DELETE /api/v1/lists/:id.
@@ -71,7 +71,7 @@ func (t GetList_Accounts) QueryPage() QueryPage {
 type PostList_Accounts struct {
 	Host       string   `header:"Host"`
 	ID         string   `param:"id"`
-	AccountIDs []string `form:"account_ids"`
+	AccountIDs []string `form:"account_ids" json:"account_ids"`
 }
 
 // DeleteList_Accounts is the input for DELETE /api/v1/lists/:id/accounts, which returns an empty object.
@@ -79,5 +79,5 @@ type PostList_Accounts struct {
 type DeleteList_Accounts struct {
 	Host       string   `header:"Host"`
 	ID         string   `param:"id"`
-	AccountIDs []string `form:"account_ids"`
+	AccountIDs []string `form:"account_ids" json:"account_ids"`
 }

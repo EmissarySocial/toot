@@ -10,10 +10,10 @@ package txn
 // https://docs.joinmastodon.org/methods/reports/#post
 type PostReport struct {
 	Host      string   `header:"Host"`
-	AccountID string   `form:"account_id"`
-	StatusIDs []string `form:"status_ids"`
-	Comment   string   `form:"comment"`
-	Forward   bool     `form:"forward"`
-	Category  string   `form:"category"`
-	RuleIDs   []string `form:"rule_ids"`
+	AccountID string   `form:"account_id" json:"account_id"`
+	StatusIDs []string `form:"status_ids" json:"status_ids"`
+	Comment   string   `form:"comment" json:"comment"`
+	Forward   bool     `form:"forward" json:"forward"`
+	Category  string   `form:"category" json:"category"`
+	RuleIDs   []string `form:"rule_ids" json:"rule_ids"`
 }

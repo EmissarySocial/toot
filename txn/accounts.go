@@ -12,12 +12,12 @@ import "mime/multipart"
 // https://docs.joinmastodon.org/methods/accounts/#create
 type PostAccount struct {
 	Host      string `header:"Host"`
-	Username  string `form:"username"`
-	Email     string `form:"email"`
-	Password  string `form:"password"`
-	Agreement bool   `form:"agreement"`
-	Locale    string `form:"locale"`
-	Reason    string `form:"reason"`
+	Username  string `form:"username" json:"username"`
+	Email     string `form:"email" json:"email"`
+	Password  string `form:"password" json:"password"`
+	Agreement bool   `form:"agreement" json:"agreement"`
+	Locale    string `form:"locale" json:"locale"`
+	Reason    string `form:"reason" json:"reason"`
 }
 
 // GetAccount_VerifyCredentials is the input for GET /api/v1/accounts/verify_credentials, which returns CredentialAccount.
@@ -33,13 +33,13 @@ type GetAccount_VerifyCredentials struct {
 // Avatar and Header are the uploaded image files themselves (multipart/form-data).
 type PatchAccount_UpdateCredentials struct {
 	Host         string                `header:"Host"`
-	DisplayName  *string               `form:"display_name"`
-	Note         *string               `form:"note"`
-	Avatar       *multipart.FileHeader `form:"avatar"`
-	Header       *multipart.FileHeader `form:"header"`
-	Locked       *bool                 `form:"locked"`
-	Bot          *bool                 `form:"bot"`
-	Discoverable *bool                 `form:"discoverable"`
+	DisplayName  *string               `form:"display_name" json:"display_name"`
+	Note         *string               `form:"note" json:"note"`
+	Avatar       *multipart.FileHeader `form:"avatar" json:"avatar"`
+	Header       *multipart.FileHeader `form:"header" json:"header"`
+	Locked       *bool                 `form:"locked" json:"locked"`
+	Bot          *bool                 `form:"bot" json:"bot"`
+	Discoverable *bool                 `form:"discoverable" json:"discoverable"`
 }
 
 // GetAccounts is the input for GET /api/v1/accounts, a batch lookup that returns []Account.
@@ -169,9 +169,9 @@ type GetAccount_Lists struct {
 type PostAccount_Follow struct {
 	Host      string   `header:"Host"`
 	ID        string   `param:"id"`
-	Reblogs   bool     `form:"reblogs"`
-	Notify    bool     `form:"notify"`
-	Languages []string `form:"languages"`
+	Reblogs   bool     `form:"reblogs" json:"reblogs"`
+	Notify    bool     `form:"notify" json:"notify"`
+	Languages []string `form:"languages" json:"languages"`
 }
 
 // PostAccount_Unfollow is the input for POST /api/v1/accounts/:id/unfollow.
@@ -207,8 +207,8 @@ type PostAccount_Unblock struct {
 type PostAccount_Mute struct {
 	Host          string `header:"Host"`
 	ID            string `param:"id"`
-	Notifications bool   `form:"notifications"`
-	Duration      bool   `form:"duration"`
+	Notifications bool   `form:"notifications" json:"notifications"`
+	Duration      bool   `form:"duration" json:"duration"`
 }
 
 // PostAccount_Unmute is the input for POST /api/v1/accounts/:id/unmute, which returns Relationship.
@@ -237,7 +237,7 @@ type PostAccount_Unpin struct {
 type PostAccount_Note struct {
 	Host    string `header:"Host"`
 	ID      string `param:"id"`
-	Comment string `form:"comment"`
+	Comment string `form:"comment" json:"comment"`
 }
 
 // GetAccount_Relationships is the input for GET /api/v1/accounts/relationships, which returns []Relationships.

@@ -17,7 +17,7 @@ type GetFeaturedTags struct {
 // https://docs.joinmastodon.org/methods/featured_tags/#feature
 type PostFeaturedTag struct {
 	Host string `header:"Host"`
-	Name string `form:"name"`
+	Name string `form:"name" json:"name"`
 }
 
 // DeleteFeaturedTag is the input for DELETE /api/v1/featured_tags/:id, which returns an empty object.

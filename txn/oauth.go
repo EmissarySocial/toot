@@ -22,19 +22,19 @@ type GetOAuth_Authorize struct {
 // https://docs.joinmastodon.org/methods/oauth/#token
 type PostOAuth_Token struct {
 	Host         string `header:"Host"`
-	GrantType    string `form:"grant_type"`
-	Code         string `form:"code"`
-	ClientID     string `form:"client_id"`
-	ClientSecret string `form:"client_secret"`
-	RedirectURI  string `form:"redirect_uri"`
-	Scope        string `form:"scope"`
+	GrantType    string `form:"grant_type" json:"grant_type"`
+	Code         string `form:"code" json:"code"`
+	ClientID     string `form:"client_id" json:"client_id"`
+	ClientSecret string `form:"client_secret" json:"client_secret"`
+	RedirectURI  string `form:"redirect_uri" json:"redirect_uri"`
+	Scope        string `form:"scope" json:"scope"`
 }
 
 // PostOAuth_Revoke is the input for POST /oauth/revoke, which returns an empty object.
 // https://docs.joinmastodon.org/methods/oauth/#revoke
 type PostOAuth_Revoke struct {
 	Host         string `header:"Host"`
-	ClientID     string `form:"client_id"`
-	ClientSecret string `form:"client_secret"`
-	Token        string `form:"token"`
+	ClientID     string `form:"client_id" json:"client_id"`
+	ClientSecret string `form:"client_secret" json:"client_secret"`
+	Token        string `form:"token" json:"token"`
 }

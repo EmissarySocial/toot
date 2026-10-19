@@ -11,12 +11,12 @@ type Instance_V1 struct {
 	Version          string `json:"version"`
 	URLs             struct {
 		StreamingAPI string `json:"streaming_api"`
-	}
+	} `json:"urls"`
 	Stats struct {
 		UserCount   int `json:"user_count"`
 		StatusCount int `json:"status_count"`
 		DomainCount int `json:"domain_count"`
-	}
+	} `json:"stats"`
 	Thumbnail        string                    `json:"thumbnail"`
 	Languages        []string                  `json:"languages"`
 	Registrations    bool                      `json:"registrations"`
@@ -42,6 +42,7 @@ type Instance_Accounts_V1 struct {
 
 // Instance_Statuses_V1 holds the limits related to statuses, in their deprecated v1 shape.
 type Instance_Statuses_V1 struct {
+	MaxCharacters            int `json:"max_characters"`
 	MaxMediaAttachments      int `json:"max_media_attachments"`
 	CharactersReservedPerURL int `json:"characters_reserved_per_url"`
 }

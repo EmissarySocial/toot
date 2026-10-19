@@ -10,21 +10,21 @@ package txn
 // https://docs.joinmastodon.org/methods/statuses/#create
 type PostStatus struct {
 	Host     string   `header:"Host"`
-	Status   string   `form:"status"`
-	MediaIDs []string `form:"media_ids"`
+	Status   string   `form:"status" json:"status"`
+	MediaIDs []string `form:"media_ids" json:"media_ids"`
 	Poll     struct {
 		Host       string   `header:"Host"`
-		Options    []string `form:"options"`
-		ExpiresIn  int      `form:"expires_in"`
-		Multiple   bool     `form:"multiple"`
-		HideTotals bool     `form:"hide_totals"`
-	} `form:"poll"`
-	InReplyToID string `form:"in_reply_to_id"`
-	Sensitive   bool   `form:"sensitive"`
-	SpoilerText string `form:"spoiler_text"`
-	Visibility  string `form:"visibility"`   // [public | unlisted | private | direct]
-	Language    string `form:"language"`     // ISO 629 2-letter language code
-	ScheduledAt string `form:"scheduled_at"` // ISO 8601 Datetime
+		Options    []string `form:"options" json:"options"`
+		ExpiresIn  int      `form:"expires_in" json:"expires_in"`
+		Multiple   bool     `form:"multiple" json:"multiple"`
+		HideTotals bool     `form:"hide_totals" json:"hide_totals"`
+	} `form:"poll" json:"poll"`
+	InReplyToID string `form:"in_reply_to_id" json:"in_reply_to_id"`
+	Sensitive   bool   `form:"sensitive" json:"sensitive"`
+	SpoilerText string `form:"spoiler_text" json:"spoiler_text"`
+	Visibility  string `form:"visibility" json:"visibility"`     // [public | unlisted | private | direct]
+	Language    string `form:"language" json:"language"`         // ISO 629 2-letter language code
+	ScheduledAt string `form:"scheduled_at" json:"scheduled_at"` // ISO 8601 Datetime
 }
 
 // GetStatus is the input for GET /api/v1/statuses/:id, which returns Status.
@@ -53,7 +53,7 @@ type GetStatus_Context struct {
 type PostStatus_Translate struct {
 	Host string `header:"Host"`
 	ID   string `param:"id"`
-	Lang string `form:"lang"`
+	Lang string `form:"lang" json:"lang"`
 }
 
 // GetStatus_RebloggedBy is the input for GET /api/v1/statuses/:id/reblogged_by, which returns []Account.
@@ -119,7 +119,7 @@ type PostStatus_Unfavourite struct {
 type PostStatus_Reblog struct {
 	Host       string `header:"Host"`
 	ID         string `param:"id"`
-	Visibility string `form:"visibility"` // [public | unlisted | private]
+	Visibility string `form:"visibility" json:"visibility"` // [public | unlisted | private]
 }
 
 // PostStatus_Unreblog is the input for POST /api/v1/statuses/:id/unreblog, which returns Status.
@@ -176,18 +176,18 @@ type PostStatus_Unpin struct {
 type PutStatus struct {
 	Host        string   `header:"Host"`
 	ID          string   `param:"id"`
-	Status      string   `form:"status"`
-	SpoilerText string   `form:"spoiler_text"`
-	Sensitive   bool     `form:"sensitive"`
-	Language    string   `form:"language"`
-	MediaIDs    []string `form:"media_ids[]"`
+	Status      string   `form:"status" json:"status"`
+	SpoilerText string   `form:"spoiler_text" json:"spoiler_text"`
+	Sensitive   bool     `form:"sensitive" json:"sensitive"`
+	Language    string   `form:"language" json:"language"`
+	MediaIDs    []string `form:"media_ids[]" json:"media_ids"`
 	Poll        struct {
 		Host       string   `header:"Host"`
-		Options    []string `form:"options[]"`
-		ExpiresIn  int      `form:"expires_in"`
-		Multiple   bool     `form:"multiple"`
-		HideTotals bool     `form:"hide_totals"`
-	} `form:"poll"`
+		Options    []string `form:"options[]" json:"options"`
+		ExpiresIn  int      `form:"expires_in" json:"expires_in"`
+		Multiple   bool     `form:"multiple" json:"multiple"`
+		HideTotals bool     `form:"hide_totals" json:"hide_totals"`
+	} `form:"poll" json:"poll"`
 }
 
 // GetStatus_History is the input for GET /api/v1/statuses/:id/history, which returns []StatusEdit.

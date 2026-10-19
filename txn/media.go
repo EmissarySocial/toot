@@ -13,10 +13,10 @@ import "mime/multipart"
 // https://docs.joinmastodon.org/methods/media/#v2
 type PostMedia struct {
 	Host        string                `header:"Host"`
-	File        *multipart.FileHeader `form:"file"`
-	Thumbnail   *multipart.FileHeader `form:"thumbnail"`
-	Description string                `form:"description"`
-	Focus       string                `form:"focus"`
+	File        *multipart.FileHeader `form:"file" json:"file"`
+	Thumbnail   *multipart.FileHeader `form:"thumbnail" json:"thumbnail"`
+	Description string                `form:"description" json:"description"`
+	Focus       string                `form:"focus" json:"focus"`
 }
 
 // GetMedia is the input for GET /api/v1/media/:id, which returns MediaAttachment.
@@ -31,6 +31,6 @@ type GetMedia struct {
 type PutMedia struct {
 	Host        string `header:"Host"`
 	ID          string `param:"id"`
-	Description string `form:"description"`
-	Focus       string `form:"focus"`
+	Description string `form:"description" json:"description"`
+	Focus       string `form:"focus" json:"focus"`
 }

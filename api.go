@@ -56,7 +56,7 @@ type API[AuthToken ScopesGetter] struct {
 	GetBlocks func(AuthToken, txn.GetBlocks) ([]object.Account, PageInfo, error)
 
 	// https://docs.joinmastodon.org/methods/bookmarks/
-	GetBookmarks func(AuthToken, txn.GetBookmarks) ([]object.Status, error)
+	GetBookmarks func(AuthToken, txn.GetBookmarks) ([]object.Status, PageInfo, error)
 
 	// https://docs.joinmastodon.org/methods/collections/
 	PostCollection             func(AuthToken, txn.PostCollection) (object.Collection, error)
@@ -92,7 +92,7 @@ type API[AuthToken ScopesGetter] struct {
 	GetEndorsements func(AuthToken, txn.GetEndorsements) ([]object.Account, PageInfo, error)
 
 	// https://docs.joinmastodon.org/methods/favourites/
-	GetFavourites func(AuthToken, txn.GetFavourites) ([]object.Status, error)
+	GetFavourites func(AuthToken, txn.GetFavourites) ([]object.Status, PageInfo, error)
 
 	// https://docs.joinmastodon.org/methods/featured_tags/
 	GetFeaturedTags             func(AuthToken, txn.GetFeaturedTags) ([]object.FeaturedTag, error)

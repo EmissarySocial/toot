@@ -32,12 +32,12 @@ func (t GetDomainBlocks) QueryPage() QueryPage {
 // https://docs.joinmastodon.org/methods/domain_blocks/#block
 type PostDomainBlock struct {
 	Host   string `header:"Host"`
-	Domain string `form:"domain"`
+	Domain string `form:"domain" json:"domain"`
 }
 
 // DeleteDomainBlock is the input for DELETE /api/v1/domain_blocks, which returns an empty object.
 // https://docs.joinmastodon.org/methods/domain_blocks/#unblock
 type DeleteDomainBlock struct {
 	Host   string `header:"Host"`
-	Domain string `form:"domain"`
+	Domain string `form:"domain" json:"domain"`
 }

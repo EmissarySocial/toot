@@ -8,7 +8,7 @@ package scope
 
 // GetTag is the OAuth scope required by GET /api/v1/tags/:id.
 // https://docs.joinmastodon.org/methods/tags/#get
-const GetTag = Public
+const GetTag = ReadStatuses
 
 // PostTag_Follow is the OAuth scope required by POST /api/v1/tags/:id/follow.
 // https://docs.joinmastodon.org/methods/tags/#follow

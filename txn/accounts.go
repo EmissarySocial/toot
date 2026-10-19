@@ -37,6 +37,13 @@ type PatchAccount_UpdateCredentials struct {
 	Discoverable bool   `form:"discoverable"`
 }
 
+// GetAccounts is the input for GET /api/v1/accounts, a batch lookup that returns []Account.
+// https://docs.joinmastodon.org/methods/accounts/#index
+type GetAccounts struct {
+	Host string   `header:"Host"`
+	IDs  []string `query:"id[]"`
+}
+
 // GetAccount is the input for GET /api/v1/accounts/:id.
 // https://docs.joinmastodon.org/methods/accounts/#get
 type GetAccount struct {
@@ -85,6 +92,29 @@ type GetAccount_Followers struct {
 // QueryPage implements the QueryPager interface, returning
 // the QueryPage data embedded in this transaction
 func (t GetAccount_Followers) QueryPage() QueryPage {
+	return QueryPage{
+		MaxID:   t.MaxID,
+		SinceID: t.SinceID,
+		MinID:   t.MinID,
+		Limit:   t.Limit,
+	}
+}
+
+// GetAccount_Endorsements is the input for GET /api/v1/accounts/:id/endorsements,
+// which returns []Account -- accounts featured on this account's profile.
+// https://docs.joinmastodon.org/methods/accounts/#endorsements
+type GetAccount_Endorsements struct {
+	Host    string `header:"Host"`
+	ID      string `param:"id"`
+	MaxID   string `query:"max_id"`
+	SinceID string `query:"since_id"`
+	MinID   string `query:"min_id"`
+	Limit   int64  `query:"limit"`
+}
+
+// QueryPage implements the QueryPager interface, returning
+// the QueryPage data embedded in this transaction
+func (t GetAccount_Endorsements) QueryPage() QueryPage {
 	return QueryPage{
 		MaxID:   t.MaxID,
 		SinceID: t.SinceID,
@@ -212,11 +242,12 @@ type GetAccount_Relationships struct {
 	IDs  []string `query:"id[]"`
 }
 
-// GetAccount_FamiliarFollowers is the input for GET /api/v1/accounts/:id/familiar_followers, which returns []FamiliarFollower.
+// GetAccount_FamiliarFollowers is the input for GET /api/v1/accounts/familiar_followers, which returns []FamiliarFollower.
+// This is a batch lookup, same shape as GetAccount_Relationships just above.
 // https://docs.joinmastodon.org/methods/accounts/#familiar_followers
 type GetAccount_FamiliarFollowers struct {
-	Host string `header:"Host"`
-	ID   string `param:"id[]"`
+	Host string   `header:"Host"`
+	IDs  []string `query:"id[]"`
 }
 
 // GetAccount_Search is the input for GET /api/v1/accounts/search, which returns []Account.

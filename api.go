@@ -19,6 +19,7 @@ type API[AuthToken ScopesGetter] struct {
 	PostAccount                     func(AuthToken, txn.PostAccount) (object.Token, error)
 	GetAccount_VerifyCredentials    func(AuthToken, txn.GetAccount_VerifyCredentials) (object.Account, error)
 	PatchAccount_UpdateCredentials  func(AuthToken, txn.PatchAccount_UpdateCredentials) (object.Account, error)
+	GetAccounts                     func(AuthToken, txn.GetAccounts) ([]object.Account, error)
 	GetAccount                      func(AuthToken, txn.GetAccount) (object.Account, error)
 	GetAccount_Statuses             func(AuthToken, txn.GetAccount_Statuses) ([]object.Status, PageInfo, error)
 	GetAccount_Lists                func(AuthToken, txn.GetAccount_Lists) ([]object.List, error)
@@ -35,6 +36,7 @@ type API[AuthToken ScopesGetter] struct {
 	PostAccount_Pin                 func(AuthToken, txn.PostAccount_Pin) (object.Relationship, error)
 	PostAccount_Unpin               func(AuthToken, txn.PostAccount_Unpin) (object.Relationship, error)
 	PostAccount_Note                func(AuthToken, txn.PostAccount_Note) (object.Relationship, error)
+	GetAccount_Endorsements         func(AuthToken, txn.GetAccount_Endorsements) ([]object.Account, PageInfo, error)
 	GetAccount_Relationships        func(AuthToken, txn.GetAccount_Relationships) ([]object.Relationship, error)
 	GetAccount_FamiliarFollowers    func(AuthToken, txn.GetAccount_FamiliarFollowers) (object.FamiliarFollowers, error)
 	GetAccount_Search               func(AuthToken, txn.GetAccount_Search) ([]object.Account, PageInfo, error)
@@ -55,6 +57,17 @@ type API[AuthToken ScopesGetter] struct {
 
 	// https://docs.joinmastodon.org/methods/bookmarks/
 	GetBookmarks func(AuthToken, txn.GetBookmarks) ([]object.Status, error)
+
+	// https://docs.joinmastodon.org/methods/collections/
+	PostCollection             func(AuthToken, txn.PostCollection) (object.Collection, error)
+	GetCollection              func(AuthToken, txn.GetCollection) (object.CollectionWithAccounts, error)
+	GetAccount_Collections     func(AuthToken, txn.GetAccount_Collections) ([]object.Collection, PageInfo, error)
+	GetAccount_InCollections   func(AuthToken, txn.GetAccount_InCollections) ([]object.Collection, PageInfo, error)
+	PatchCollection            func(AuthToken, txn.PatchCollection) (object.Collection, error)
+	DeleteCollection           func(AuthToken, txn.DeleteCollection) (struct{}, error)
+	PostCollection_Item        func(AuthToken, txn.PostCollection_Item) (object.CollectionItem, error)
+	DeleteCollection_Item      func(AuthToken, txn.DeleteCollection_Item) (struct{}, error)
+	PostCollection_Item_Revoke func(AuthToken, txn.PostCollection_Item_Revoke) (struct{}, error)
 
 	// https://docs.joinmastodon.org/methods/conversations/
 	GetConversations     func(AuthToken, txn.GetConversations) ([]object.Conversation, PageInfo, error)
@@ -141,15 +154,32 @@ type API[AuthToken ScopesGetter] struct {
 
 	// https://docs.joinmastodon.org/methods/media/
 	PostMedia func(AuthToken, txn.PostMedia) (object.MediaAttachment, error)
+	GetMedia  func(AuthToken, txn.GetMedia) (object.MediaAttachment, error)
+	PutMedia  func(AuthToken, txn.PutMedia) (object.MediaAttachment, error)
 
 	// https://docs.joinmastodon.org/methods/mutes/
 	GetMutes func(AuthToken, txn.GetMutes) ([]object.Account, PageInfo, error)
 
 	// https://docs.joinmastodon.org/methods/notifications/
-	GetNotifications         func(AuthToken, txn.GetNotifications) ([]object.Notification, PageInfo, error)
-	GetNotification          func(AuthToken, txn.GetNotification) (object.Notification, error)
-	PostNotifications_Clear  func(AuthToken, txn.PostNotifications_Clear) (object.Notification, error)
-	PostNotification_Dismiss func(AuthToken, txn.PostNotification_Dismiss) (object.Notification, error)
+	GetNotifications                    func(AuthToken, txn.GetNotifications) ([]object.Notification, PageInfo, error)
+	GetNotification                     func(AuthToken, txn.GetNotification) (object.Notification, error)
+	GetNotifications_UnreadCount        func(AuthToken, txn.GetNotifications_UnreadCount) (object.NotificationsUnreadCount, error)
+	PostNotifications_Clear             func(AuthToken, txn.PostNotifications_Clear) (object.Notification, error)
+	PostNotification_Dismiss            func(AuthToken, txn.PostNotification_Dismiss) (object.Notification, error)
+	GetNotificationPolicy               func(AuthToken, txn.GetNotificationPolicy) (object.NotificationPolicy, error)
+	PatchNotificationPolicy             func(AuthToken, txn.PatchNotificationPolicy) (object.NotificationPolicy, error)
+	GetNotificationRequests             func(AuthToken, txn.GetNotificationRequests) ([]object.NotificationRequest, PageInfo, error)
+	GetNotificationRequest              func(AuthToken, txn.GetNotificationRequest) (object.NotificationRequest, error)
+	PostNotificationRequest_Accept      func(AuthToken, txn.PostNotificationRequest_Accept) (struct{}, error)
+	PostNotificationRequest_Dismiss     func(AuthToken, txn.PostNotificationRequest_Dismiss) (struct{}, error)
+	PostNotificationRequests_Accept     func(AuthToken, txn.PostNotificationRequests_Accept) (struct{}, error)
+	PostNotificationRequests_Dismiss    func(AuthToken, txn.PostNotificationRequests_Dismiss) (struct{}, error)
+	GetNotificationRequests_Merged      func(AuthToken, txn.GetNotificationRequests_Merged) (object.NotificationRequestsMerged, error)
+	GetGroupedNotifications             func(AuthToken, txn.GetGroupedNotifications) (object.GroupedNotificationsResults, PageInfo, error)
+	GetNotificationGroup                func(AuthToken, txn.GetNotificationGroup) (object.GroupedNotificationsResults, error)
+	PostNotificationGroup_Dismiss       func(AuthToken, txn.PostNotificationGroup_Dismiss) (struct{}, error)
+	GetGroupedNotifications_UnreadCount func(AuthToken, txn.GetGroupedNotifications_UnreadCount) (object.NotificationsUnreadCount, error)
+	PostGroupedNotifications_Clear      func(AuthToken, txn.PostGroupedNotifications_Clear) (struct{}, error)
 
 	// https://docs.joinmastodon.org/methods/oauth/
 	GetOAuth_Authorize func(AuthToken, txn.GetOAuth_Authorize) (struct{}, error)
@@ -164,11 +194,17 @@ type API[AuthToken ScopesGetter] struct {
 	PostPoll_Votes func(AuthToken, txn.PostPoll_Votes) ([]object.Poll, error)
 
 	// https://docs.joinmastodon.org/methods/preferences/
-	GetPreferences func(AuthToken, txn.GetPreferences) (map[string]any, error)
+	GetPreferences func(AuthToken, txn.GetPreferences) (object.Preferences, error)
 
 	// https://docs.joinmastodon.org/methods/profile/
 	DeleteProfile_Avatar func(AuthToken, txn.DeleteProfile_Avatar) (object.Account, error)
 	DeleteProfile_Header func(AuthToken, txn.DeleteProfile_Header) (object.Account, error)
+
+	// https://docs.joinmastodon.org/methods/push/
+	PostPushSubscription   func(AuthToken, txn.PostPushSubscription) (object.WebPushSubscription, error)
+	GetPushSubscription    func(AuthToken, txn.GetPushSubscription) (object.WebPushSubscription, error)
+	PutPushSubscription    func(AuthToken, txn.PutPushSubscription) (object.WebPushSubscription, error)
+	DeletePushSubscription func(AuthToken, txn.DeletePushSubscription) (struct{}, error)
 
 	// https://docs.joinmastodon.org/methods/reports/
 	PostReport func(AuthToken, txn.PostReport) (object.Report, error)
@@ -185,7 +221,7 @@ type API[AuthToken ScopesGetter] struct {
 	// https://docs.joinmastodon.org/methods/statuses/#create
 	PostStatus             func(AuthToken, txn.PostStatus) (object.Status, error)
 	GetStatus              func(AuthToken, txn.GetStatus) (object.Status, error)
-	DeleteStatus           func(AuthToken, txn.DeleteStatus) (struct{}, error)
+	DeleteStatus           func(AuthToken, txn.DeleteStatus) (object.Status, error)
 	GetStatus_Context      func(AuthToken, txn.GetStatus_Context) (object.Context, error)
 	PostStatus_Translate   func(AuthToken, txn.PostStatus_Translate) (object.Translation, error)
 	GetStatus_RebloggedBy  func(AuthToken, txn.GetStatus_RebloggedBy) ([]object.Account, PageInfo, error)

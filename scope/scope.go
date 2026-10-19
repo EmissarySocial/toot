@@ -148,3 +148,9 @@ const AdminWriteEmailDomainBlocks = "admin:write:email_domain_blocks"
 
 // AdminWriteCanonicalEmailBlocks grants moderators the ability to block and unblock canonical email addresses.
 const AdminWriteCanonicalEmailBlocks = "admin:write:canonical_email_blocks"
+
+// Grants access to view a user's Collections
+const ReadCollections = "read:collections"
+
+// Grants access to create and manage a user's Collections
+const WriteCollections = "write:collections"

@@ -39,7 +39,7 @@ type GetScheduledStatus struct {
 type PutScheduledStatus struct {
 	Host        string `header:"Host"`
 	ID          string `param:"id"`
-	ScheduledAt string `form:"scheduled_at"` // ISO 8601 Datetime
+	ScheduledAt string `form:"scheduled_at" json:"scheduled_at"` // ISO 8601 Datetime
 }
 
 // DeleteScheduledStatus is the input for DELETE /api/v1/scheduled_statuses/:id, which returns an empty object.

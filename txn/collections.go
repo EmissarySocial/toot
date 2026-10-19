@@ -10,13 +10,13 @@ package txn
 // https://docs.joinmastodon.org/methods/collections/#create
 type PostCollection struct {
 	Host         string   `header:"Host"`
-	Name         string   `form:"name"`
-	Description  string   `form:"description"`
-	Language     string   `form:"language"`
-	TagName      string   `form:"tag_name"`
-	Sensitive    bool     `form:"sensitive"`
-	Discoverable bool     `form:"discoverable"`
-	AccountIDs   []string `form:"account_ids"`
+	Name         string   `form:"name" json:"name"`
+	Description  string   `form:"description" json:"description"`
+	Language     string   `form:"language" json:"language"`
+	TagName      string   `form:"tag_name" json:"tag_name"`
+	Sensitive    bool     `form:"sensitive" json:"sensitive"`
+	Discoverable bool     `form:"discoverable" json:"discoverable"`
+	AccountIDs   []string `form:"account_ids" json:"account_ids"`
 }
 
 // GetCollection is the input for GET /api/v1/collections/:id, which returns CollectionWithAccounts.
@@ -49,12 +49,12 @@ type GetAccount_InCollections struct {
 type PatchCollection struct {
 	Host         string `header:"Host"`
 	ID           string `param:"id"`
-	Name         string `form:"name"`
-	Description  string `form:"description"`
-	Language     string `form:"language"`
-	TagName      string `form:"tag_name"`
-	Sensitive    bool   `form:"sensitive"`
-	Discoverable bool   `form:"discoverable"`
+	Name         string `form:"name" json:"name"`
+	Description  string `form:"description" json:"description"`
+	Language     string `form:"language" json:"language"`
+	TagName      string `form:"tag_name" json:"tag_name"`
+	Sensitive    bool   `form:"sensitive" json:"sensitive"`
+	Discoverable bool   `form:"discoverable" json:"discoverable"`
 }
 
 // DeleteCollection is the input for DELETE /api/v1/collections/:id, which returns an empty object.
@@ -69,7 +69,7 @@ type DeleteCollection struct {
 type PostCollection_Item struct {
 	Host         string `header:"Host"`
 	CollectionID string `param:"collection_id"`
-	AccountID    string `form:"account_id"`
+	AccountID    string `form:"account_id" json:"account_id"`
 }
 
 // DeleteCollection_Item is the input for DELETE /api/v1/collections/:collection_id/items/:id, which returns an empty object.

@@ -12,30 +12,30 @@ package txn
 type PostPushSubscription struct {
 	Host         string `header:"Host"`
 	Subscription struct {
-		Endpoint string `form:"endpoint"`
+		Endpoint string `form:"endpoint" json:"endpoint"`
 		Keys     struct {
-			P256dh string `form:"p256dh"`
-			Auth   string `form:"auth"`
-		} `form:"keys"`
-		Standard bool `form:"standard"`
-	} `form:"subscription"`
+			P256dh string `form:"p256dh" json:"p256dh"`
+			Auth   string `form:"auth" json:"auth"`
+		} `form:"keys" json:"keys"`
+		Standard bool `form:"standard" json:"standard"`
+	} `form:"subscription" json:"subscription"`
 	Data struct {
 		Alerts struct {
-			Mention       bool `form:"mention"`
-			Quote         bool `form:"quote"`
-			Status        bool `form:"status"`
-			Reblog        bool `form:"reblog"`
-			Follow        bool `form:"follow"`
-			FollowRequest bool `form:"follow_request"`
-			Favourite     bool `form:"favourite"`
-			Poll          bool `form:"poll"`
-			Update        bool `form:"update"`
-			QuotedUpdate  bool `form:"quoted_update"`
-			AdminSignUp   bool `form:"admin.sign_up"`
-			AdminReport   bool `form:"admin.report"`
-		} `form:"alerts"`
-		Policy string `form:"policy"`
-	} `form:"data"`
+			Mention       bool `form:"mention" json:"mention"`
+			Quote         bool `form:"quote" json:"quote"`
+			Status        bool `form:"status" json:"status"`
+			Reblog        bool `form:"reblog" json:"reblog"`
+			Follow        bool `form:"follow" json:"follow"`
+			FollowRequest bool `form:"follow_request" json:"follow_request"`
+			Favourite     bool `form:"favourite" json:"favourite"`
+			Poll          bool `form:"poll" json:"poll"`
+			Update        bool `form:"update" json:"update"`
+			QuotedUpdate  bool `form:"quoted_update" json:"quoted_update"`
+			AdminSignUp   bool `form:"admin.sign_up" json:"admin.sign_up"`
+			AdminReport   bool `form:"admin.report" json:"admin.report"`
+		} `form:"alerts" json:"alerts"`
+		Policy string `form:"policy" json:"policy"`
+	} `form:"data" json:"data"`
 }
 
 // GetPushSubscription is the input for GET /api/v1/push/subscription, which returns WebPushSubscription.
@@ -50,21 +50,21 @@ type PutPushSubscription struct {
 	Host string `header:"Host"`
 	Data struct {
 		Alerts struct {
-			Mention       bool `form:"mention"`
-			Quote         bool `form:"quote"`
-			Status        bool `form:"status"`
-			Reblog        bool `form:"reblog"`
-			Follow        bool `form:"follow"`
-			FollowRequest bool `form:"follow_request"`
-			Favourite     bool `form:"favourite"`
-			Poll          bool `form:"poll"`
-			Update        bool `form:"update"`
-			QuotedUpdate  bool `form:"quoted_update"`
-			AdminSignUp   bool `form:"admin.sign_up"`
-			AdminReport   bool `form:"admin.report"`
-		} `form:"alerts"`
-		Policy string `form:"policy"`
-	} `form:"data"`
+			Mention       bool `form:"mention" json:"mention"`
+			Quote         bool `form:"quote" json:"quote"`
+			Status        bool `form:"status" json:"status"`
+			Reblog        bool `form:"reblog" json:"reblog"`
+			Follow        bool `form:"follow" json:"follow"`
+			FollowRequest bool `form:"follow_request" json:"follow_request"`
+			Favourite     bool `form:"favourite" json:"favourite"`
+			Poll          bool `form:"poll" json:"poll"`
+			Update        bool `form:"update" json:"update"`
+			QuotedUpdate  bool `form:"quoted_update" json:"quoted_update"`
+			AdminSignUp   bool `form:"admin.sign_up" json:"admin.sign_up"`
+			AdminReport   bool `form:"admin.report" json:"admin.report"`
+		} `form:"alerts" json:"alerts"`
+		Policy string `form:"policy" json:"policy"`
+	} `form:"data" json:"data"`
 }
 
 // DeletePushSubscription is the input for DELETE /api/v1/push/subscription, which returns an empty object.

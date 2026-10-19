@@ -47,7 +47,7 @@ type PostNotifications_Clear struct {
 // https://docs.joinmastodon.org/methods/notifications/#dismiss
 type PostNotification_Dismiss struct {
 	Host string `header:"Host"`
-	ID   string `form:"id"`
+	ID   string `form:"id" json:"id"`
 }
 
 // GetNotifications_UnreadCount is the input for GET /api/v1/notifications/unread_count, which returns NotificationsUnreadCount.
@@ -70,12 +70,12 @@ type GetNotificationPolicy struct {
 // https://docs.joinmastodon.org/methods/notifications/#update-policy
 type PatchNotificationPolicy struct {
 	Host               string `header:"Host"`
-	ForNotFollowing    string `form:"for_not_following"`
-	ForNotFollowers    string `form:"for_not_followers"`
-	ForNewAccounts     string `form:"for_new_accounts"`
-	ForPrivateMentions string `form:"for_private_mentions"`
-	ForLimitedAccounts string `form:"for_limited_accounts"`
-	ForBots            string `form:"for_bots"`
+	ForNotFollowing    string `form:"for_not_following" json:"for_not_following"`
+	ForNotFollowers    string `form:"for_not_followers" json:"for_not_followers"`
+	ForNewAccounts     string `form:"for_new_accounts" json:"for_new_accounts"`
+	ForPrivateMentions string `form:"for_private_mentions" json:"for_private_mentions"`
+	ForLimitedAccounts string `form:"for_limited_accounts" json:"for_limited_accounts"`
+	ForBots            string `form:"for_bots" json:"for_bots"`
 }
 
 // GetNotificationRequests is the input for GET /api/v1/notifications/requests, which returns []NotificationRequest.
@@ -117,14 +117,14 @@ type PostNotificationRequest_Dismiss struct {
 // https://docs.joinmastodon.org/methods/notifications/#accept-multiple-requests
 type PostNotificationRequests_Accept struct {
 	Host string   `header:"Host"`
-	ID   []string `form:"id"`
+	ID   []string `form:"id" json:"id"`
 }
 
 // PostNotificationRequests_Dismiss is the input for POST /api/v1/notifications/requests/dismiss, which returns an empty object.
 // https://docs.joinmastodon.org/methods/notifications/#dismiss-multiple-requests
 type PostNotificationRequests_Dismiss struct {
 	Host string   `header:"Host"`
-	ID   []string `form:"id"`
+	ID   []string `form:"id" json:"id"`
 }
 
 // GetNotificationRequests_Merged is the input for GET /api/v1/notifications/requests/merged, which returns NotificationRequestsMerged.

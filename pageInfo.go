@@ -23,17 +23,23 @@ func (p PageInfo) SetHeader(header http.Header, path string) {
 		return
 	}
 
-	// Trim any query string off the base URL, because each link supplies its own.
-	path, _, _ = strings.Cut(path, "?")
+	// Each link supplies its own paging cursor, but keeps the request's other parameters (such as
+	// only_media or exclude_replies) so that the next page is filtered the same way as this one.
+	path, rawQuery, _ := strings.Cut(path, "?")
+	filters, _ := url.ParseQuery(rawQuery)
+
+	for _, cursor := range []string{"max_id", "min_id", "since_id", "offset"} {
+		filters.Del(cursor)
+	}
 
 	links := make([]string, 0, 2)
 
 	if next := p.GetNextPage(path); next != "" {
-		links = append(links, "<"+next+`>; rel="next"`)
+		links = append(links, "<"+withFilters(next, filters)+`>; rel="next"`)
 	}
 
 	if prev := p.GetPreviousPage(path); prev != "" {
-		links = append(links, "<"+prev+`>; rel="prev"`)
+		links = append(links, "<"+withFilters(prev, filters)+`>; rel="prev"`)
 	}
 
 	// RULE: A header with no links at all is not written.
@@ -94,4 +100,14 @@ func (p PageInfo) GetNextPage(path string) string {
 	}
 
 	return ""
+}
+
+// withFilters adds query parameters to a link that already has its paging cursor.
+func withFilters(link string, filters url.Values) string {
+
+	if len(filters) == 0 {
+		return link
+	}
+
+	return link + "&" + filters.Encode()
 }

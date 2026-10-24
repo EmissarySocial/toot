@@ -72,3 +72,97 @@ func fieldName(field *ast.Field) string {
 	}
 	return field.Names[0].Name
 }
+
+// TestPathParamsHaveParamTags requires each ":name" in a route path to have a field tagged
+// param:"name" on the request type of the same name
+func TestPathParamsHaveParamTags(t *testing.T) {
+
+	// Echo binds path values only through param tags, so any other tag (such as uri:"id") leaves the field empty
+
+	routes := routePaths(t)
+	checked := 0
+
+	packages, err := parser.ParseDir(token.NewFileSet(), ".", func(info fs.FileInfo) bool {
+		return !strings.HasSuffix(info.Name(), "_test.go")
+	}, 0)
+
+	if err != nil {
+		t.Fatalf("parsing txn: %v", err)
+	}
+
+	for _, pkg := range packages {
+		ast.Inspect(pkg, func(node ast.Node) bool {
+
+			spec, ok := node.(*ast.TypeSpec)
+			if !ok {
+				return true
+			}
+
+			path, found := routes[spec.Name.Name]
+			structType, isStruct := spec.Type.(*ast.StructType)
+
+			if !found || !isStruct {
+				return true
+			}
+
+			params := map[string]bool{}
+
+			for _, field := range structType.Fields.List {
+				if field.Tag == nil {
+					continue
+				}
+				raw, _ := strconv.Unquote(field.Tag.Value)
+				if name, ok := reflect.StructTag(raw).Lookup("param"); ok {
+					params[name] = true
+				}
+			}
+
+			for _, segment := range strings.Split(path, "/") {
+				if name, isParam := strings.CutPrefix(segment, ":"); isParam {
+					checked++
+					if !params[name] {
+						t.Errorf("%s: route %s has :%s but no field tagged param:%q", spec.Name.Name, path, name, name)
+					}
+				}
+			}
+
+			return true
+		})
+	}
+
+	if checked == 0 {
+		t.Fatal("no path parameters checked; the route lookup is wrong")
+	}
+}
+
+// routePaths returns every route constant in ../route, keyed by its name
+func routePaths(t *testing.T) map[string]string {
+
+	packages, err := parser.ParseDir(token.NewFileSet(), "../route", nil, 0)
+
+	if err != nil {
+		t.Fatalf("parsing route: %v", err)
+	}
+
+	result := map[string]string{}
+
+	for _, pkg := range packages {
+		ast.Inspect(pkg, func(node ast.Node) bool {
+
+			spec, ok := node.(*ast.ValueSpec)
+			if !ok || len(spec.Names) != 1 || len(spec.Values) != 1 {
+				return true
+			}
+
+			if literal, ok := spec.Values[0].(*ast.BasicLit); ok && literal.Kind == token.STRING {
+				if value, err := strconv.Unquote(literal.Value); err == nil {
+					result[spec.Names[0].Name] = value
+				}
+			}
+
+			return true
+		})
+	}
+
+	return result
+}

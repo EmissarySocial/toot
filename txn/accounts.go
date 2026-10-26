@@ -40,6 +40,12 @@ type PatchAccount_UpdateCredentials struct {
 	Locked       *bool                 `form:"locked" json:"locked"`
 	Bot          *bool                 `form:"bot" json:"bot"`
 	Discoverable *bool                 `form:"discoverable" json:"discoverable"`
+
+	// FieldsAttributes replaces the profile fields, keyed by position ("0", "1", ...). Nil when not sent.
+	FieldsAttributes map[string]struct {
+		Name  string `form:"name" json:"name"`
+		Value string `form:"value" json:"value"`
+	} `form:"fields_attributes" json:"fields_attributes"`
 }
 
 // GetAccounts is the input for GET /api/v1/accounts, a batch lookup that returns []Account.

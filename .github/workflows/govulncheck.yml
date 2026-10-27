@@ -26,12 +26,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    # govulncheck needs Go 1.26, and setup-go sets GOTOOLCHAIN=local, so this module's
-    # older go directive would fail the install instead of downloading.  See go-quality ci.md.
+    # Use go.mod's Go version: setup-go sets GOTOOLCHAIN=local, so an older Go cannot load
+    # this module and the tool fails before it checks anything.
     - name: Set up Go
       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
-        go-version: "1.26.x"
+        go-version-file: go.mod
 
     - name: Install Govulncheck
       run: go install golang.org/x/vuln/cmd/govulncheck@v1.8.0

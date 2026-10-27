@@ -4,6 +4,8 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
@@ -30,25 +32,51 @@ var scopeVocabulary = map[string]bool{
 // txnHelpers lists the types in the txn package that are not endpoint inputs.
 var txnHelpers = map[string]bool{"QueryPage": true}
 
+// parseGoFiles parses every .go file in a directory, keyed by its path, the way
+// parser.ParseDir did before it was deprecated
+func parseGoFiles(t *testing.T, dir string) map[string]*ast.File {
+
+	t.Helper()
+
+	entries, err := os.ReadDir(dir)
+
+	if err != nil {
+		t.Fatalf("unable to read %s: %v", dir, err)
+	}
+
+	fileSet := token.NewFileSet()
+	result := make(map[string]*ast.File)
+
+	for _, entry := range entries {
+
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".go") {
+			continue
+		}
+
+		path := filepath.Join(dir, entry.Name())
+		file, err := parser.ParseFile(fileSet, path, nil, 0)
+
+		if err != nil {
+			t.Fatalf("unable to parse %s: %v", path, err)
+		}
+
+		result[path] = file
+	}
+
+	return result
+}
+
 // parseDir returns the names declared in a package directory, keeping only those
 // selected by the provided filter.
 func parseDir(t *testing.T, dir string, collect func(ast.Decl, func(string))) map[string]bool {
 
 	t.Helper()
 
-	packages, err := parser.ParseDir(token.NewFileSet(), dir, nil, 0)
-
-	if err != nil {
-		t.Fatalf("unable to parse %s: %v", dir, err)
-	}
-
 	result := make(map[string]bool)
 
-	for _, pkg := range packages {
-		for _, file := range pkg.Files {
-			for _, decl := range file.Decls {
-				collect(decl, func(name string) { result[name] = true })
-			}
+	for _, file := range parseGoFiles(t, dir) {
+		for _, decl := range file.Decls {
+			collect(decl, func(name string) { result[name] = true })
 		}
 	}
 
@@ -204,43 +232,37 @@ func TestConsistency_EveryEndpointIsDeclaredFourTimes(t *testing.T) {
 // A route constant must hold a path, and a scope constant must not.
 func TestConsistency_RouteValuesArePaths(t *testing.T) {
 
-	file, err := parser.ParseDir(token.NewFileSet(), "route", nil, 0)
+	files := parseGoFiles(t, "route")
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	for path, f := range files {
+		for _, decl := range f.Decls {
 
-	for _, pkg := range file {
-		for path, f := range pkg.Files {
-			for _, decl := range f.Decls {
+			genDecl, ok := decl.(*ast.GenDecl)
 
-				genDecl, ok := decl.(*ast.GenDecl)
+			if !ok || genDecl.Tok != token.CONST {
+				continue
+			}
 
-				if !ok || genDecl.Tok != token.CONST {
+			for _, spec := range genDecl.Specs {
+
+				valueSpec, ok := spec.(*ast.ValueSpec)
+
+				if !ok || len(valueSpec.Values) == 0 {
 					continue
 				}
 
-				for _, spec := range genDecl.Specs {
+				literal, ok := valueSpec.Values[0].(*ast.BasicLit)
 
-					valueSpec, ok := spec.(*ast.ValueSpec)
+				if !ok {
+					t.Errorf("%s: %s is not a string literal", path, valueSpec.Names[0].Name)
+					continue
+				}
 
-					if !ok || len(valueSpec.Values) == 0 {
-						continue
-					}
-
-					literal, ok := valueSpec.Values[0].(*ast.BasicLit)
-
-					if !ok {
-						t.Errorf("%s: %s is not a string literal", path, valueSpec.Names[0].Name)
-						continue
-					}
-
-					if !strings.HasPrefix(literal.Value, `"/api/`) &&
-						!strings.HasPrefix(literal.Value, `"/oauth/`) &&
-						!strings.HasPrefix(literal.Value, `"/.well-known/`) {
-						t.Errorf("%s: %s = %s does not look like an API path",
-							path, valueSpec.Names[0].Name, literal.Value)
-					}
+				if !strings.HasPrefix(literal.Value, `"/api/`) &&
+					!strings.HasPrefix(literal.Value, `"/oauth/`) &&
+					!strings.HasPrefix(literal.Value, `"/.well-known/`) {
+					t.Errorf("%s: %s = %s does not look like an API path",
+						path, valueSpec.Names[0].Name, literal.Value)
 				}
 			}
 		}
@@ -251,40 +273,34 @@ func TestConsistency_RouteValuesArePaths(t *testing.T) {
 // never a bare string literal that could drift from the vocabulary.
 func TestConsistency_ScopeValuesAreNamedConstants(t *testing.T) {
 
-	packages, err := parser.ParseDir(token.NewFileSet(), "scope", nil, 0)
+	files := parseGoFiles(t, "scope")
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	for path, file := range files {
 
-	for _, pkg := range packages {
-		for path, file := range pkg.Files {
+		// scope.go declares the vocabulary itself, as string literals.
+		if strings.HasSuffix(path, "scope.go") {
+			continue
+		}
 
-			// scope.go declares the vocabulary itself, as string literals.
-			if strings.HasSuffix(path, "scope.go") {
+		for _, decl := range file.Decls {
+
+			genDecl, ok := decl.(*ast.GenDecl)
+
+			if !ok || genDecl.Tok != token.CONST {
 				continue
 			}
 
-			for _, decl := range file.Decls {
+			for _, spec := range genDecl.Specs {
 
-				genDecl, ok := decl.(*ast.GenDecl)
+				valueSpec, ok := spec.(*ast.ValueSpec)
 
-				if !ok || genDecl.Tok != token.CONST {
+				if !ok || len(valueSpec.Values) == 0 {
 					continue
 				}
 
-				for _, spec := range genDecl.Specs {
-
-					valueSpec, ok := spec.(*ast.ValueSpec)
-
-					if !ok || len(valueSpec.Values) == 0 {
-						continue
-					}
-
-					if _, isLiteral := valueSpec.Values[0].(*ast.BasicLit); isLiteral {
-						t.Errorf("%s: %s is a bare string literal; use a scope constant instead",
-							path, valueSpec.Names[0].Name)
-					}
+				if _, isLiteral := valueSpec.Values[0].(*ast.BasicLit); isLiteral {
+					t.Errorf("%s: %s is a bare string literal; use a scope constant instead",
+						path, valueSpec.Names[0].Name)
 				}
 			}
 		}

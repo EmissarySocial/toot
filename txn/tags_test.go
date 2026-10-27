@@ -4,7 +4,8 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"io/fs"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -15,18 +16,12 @@ import (
 // Clients such as Ice Cubes post JSON bodies, which the JSON binder reads only through json tags.
 func TestFormTagsHaveMatchingJSONTags(t *testing.T) {
 
-	packages, err := parser.ParseDir(token.NewFileSet(), ".", func(info fs.FileInfo) bool {
-		return !strings.HasSuffix(info.Name(), "_test.go")
-	}, 0)
-
-	if err != nil {
-		t.Fatalf("parsing txn: %v", err)
-	}
+	files := parseGoFiles(t, ".", false)
 
 	checked := 0
 
-	for _, pkg := range packages {
-		ast.Inspect(pkg, func(node ast.Node) bool {
+	for _, source := range files {
+		ast.Inspect(source, func(node ast.Node) bool {
 
 			field, ok := node.(*ast.Field)
 			if !ok || field.Tag == nil {
@@ -82,16 +77,10 @@ func TestPathParamsHaveParamTags(t *testing.T) {
 	routes := routePaths(t)
 	checked := 0
 
-	packages, err := parser.ParseDir(token.NewFileSet(), ".", func(info fs.FileInfo) bool {
-		return !strings.HasSuffix(info.Name(), "_test.go")
-	}, 0)
+	files := parseGoFiles(t, ".", false)
 
-	if err != nil {
-		t.Fatalf("parsing txn: %v", err)
-	}
-
-	for _, pkg := range packages {
-		ast.Inspect(pkg, func(node ast.Node) bool {
+	for _, source := range files {
+		ast.Inspect(source, func(node ast.Node) bool {
 
 			spec, ok := node.(*ast.TypeSpec)
 			if !ok {
@@ -138,16 +127,12 @@ func TestPathParamsHaveParamTags(t *testing.T) {
 // routePaths returns every route constant in ../route, keyed by its name
 func routePaths(t *testing.T) map[string]string {
 
-	packages, err := parser.ParseDir(token.NewFileSet(), "../route", nil, 0)
-
-	if err != nil {
-		t.Fatalf("parsing route: %v", err)
-	}
+	files := parseGoFiles(t, "../route", true)
 
 	result := map[string]string{}
 
-	for _, pkg := range packages {
-		ast.Inspect(pkg, func(node ast.Node) bool {
+	for _, source := range files {
+		ast.Inspect(source, func(node ast.Node) bool {
 
 			spec, ok := node.(*ast.ValueSpec)
 			if !ok || len(spec.Names) != 1 || len(spec.Values) != 1 {
@@ -162,6 +147,40 @@ func routePaths(t *testing.T) map[string]string {
 
 			return true
 		})
+	}
+
+	return result
+}
+
+// parseGoFiles parses the .go files in a directory, leaving out _test.go files unless withTests is set
+func parseGoFiles(t *testing.T, dir string, withTests bool) []*ast.File {
+
+	t.Helper()
+
+	entries, err := os.ReadDir(dir)
+
+	if err != nil {
+		t.Fatalf("reading %s: %v", dir, err)
+	}
+
+	fileSet := token.NewFileSet()
+	result := make([]*ast.File, 0, len(entries))
+
+	for _, entry := range entries {
+
+		name := entry.Name()
+
+		if entry.IsDir() || !strings.HasSuffix(name, ".go") || (!withTests && strings.HasSuffix(name, "_test.go")) {
+			continue
+		}
+
+		file, err := parser.ParseFile(fileSet, filepath.Join(dir, name), nil, 0)
+
+		if err != nil {
+			t.Fatalf("parsing %s: %v", name, err)
+		}
+
+		result = append(result, file)
 	}
 
 	return result

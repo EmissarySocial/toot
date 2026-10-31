@@ -32,12 +32,12 @@ func (t GetConversations) QueryPage() QueryPage {
 // https://docs.joinmastodon.org/methods/conversations/#delete
 type DeleteConversation struct {
 	Host string `header:"Host"`
-	ID   string `uri:"id"`
+	ID   string `param:"id"`
 }
 
 // PostConversationRead is the input for POST /api/v1/conversations/:id/read, which returns Conversation.
 // https://docs.joinmastodon.org/methods/conversations/#read
 type PostConversationRead struct {
 	Host string `header:"Host"`
-	ID   string `uri:"id"`
+	ID   string `param:"id"`
 }

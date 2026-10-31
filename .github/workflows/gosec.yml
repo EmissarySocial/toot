@@ -19,15 +19,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    # gosec needs Go 1.25, and setup-go sets GOTOOLCHAIN=local, so this module's
-    # older go directive would fail the install instead of downloading.  See go-quality ci.md.
+    # Use go.mod's Go version: setup-go sets GOTOOLCHAIN=local, so an older Go cannot load
+    # this module and the tool fails before it checks anything.
     - name: Set up Go
       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
-        go-version: "1.25.x"
+        go-version-file: go.mod
 
     - name: Install Gosec
-      run: go install github.com/securego/gosec/v2/cmd/gosec@v2.29.0
+      run: go install github.com/securego/gosec/v2/cmd/gosec@v2.30.0
 
     # Suppressions live inline as `// #nosec <rule> -- <reason>`, never in a config file, so
     # the justification sits beside the code a reviewer is reading.  See go-hardening.

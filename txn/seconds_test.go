@@ -33,3 +33,16 @@ func TestSeconds_UnmarshalJSON(t *testing.T) {
 		t.Error("a word should not decode as seconds")
 	}
 }
+
+// TestSeconds_MuteDuration confirms a mute's duration decodes as seconds, as apps send it
+func TestSeconds_MuteDuration(t *testing.T) {
+
+	var value PostAccount_Mute
+	if err := json.Unmarshal([]byte(`{"duration":86400}`), &value); err != nil {
+		t.Fatal(err)
+	}
+
+	if value.Duration != 86400 {
+		t.Errorf("got %d, want 86400", value.Duration)
+	}
+}

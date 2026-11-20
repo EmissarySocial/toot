@@ -6,14 +6,16 @@ import (
 	"strconv"
 )
 
-// Seconds is a duration in seconds that also reads from a JSON string, since some clients send "3600" or "".
-type Seconds int
+// Seconds is a duration in seconds that reads from a JSON number or a JSON string
+type Seconds int // Some clients (Ice Cubes) send "3600", or "" for none
 
-// UnmarshalJSON reads a number, a quoted number, or an empty string or null (zero).
+// UnmarshalJSON reads a number, a quoted number, or an empty string or null (zero)
 func (seconds *Seconds) UnmarshalJSON(data []byte) error {
 
+	// Ignore whitespace around the value
 	data = bytes.TrimSpace(data)
 
+	// A null means zero
 	if bytes.Equal(data, []byte("null")) {
 		*seconds = 0
 		return nil
@@ -35,12 +37,14 @@ func (seconds *Seconds) UnmarshalJSON(data []byte) error {
 		data = []byte(text)
 	}
 
+	// Parse what's left as a whole number
 	value, err := strconv.Atoi(string(data))
 
 	if err != nil {
 		return err
 	}
 
+	// Time is a flat circle, measured in seconds
 	*seconds = Seconds(value)
 	return nil
 }

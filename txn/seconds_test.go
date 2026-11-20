@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// TestSeconds_UnmarshalJSON confirms numbers, quoted numbers, empty strings and null all decode.
+// TestSeconds_UnmarshalJSON confirms numbers, quoted numbers, empty strings and null all decode
 func TestSeconds_UnmarshalJSON(t *testing.T) {
 
 	cases := map[string]Seconds{

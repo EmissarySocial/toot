@@ -26,7 +26,7 @@ type PostFilter struct {
 	Title              string   `form:"title" json:"title"`
 	Context            []string `form:"context" json:"context"`
 	FilterAction       string   `form:"filter_action" json:"filter_action"`
-	ExpiresIn          int      `form:"expires_in" json:"expires_in"`
+	ExpiresIn          Seconds  `form:"expires_in" json:"expires_in"`
 	KeywordsAttributes []struct {
 		Host      string `header:"Host"`
 		Keyword   string `form:"keyword" json:"keyword"`
@@ -42,7 +42,7 @@ type PutFilter struct {
 	Title              string   `form:"title" json:"title"`                 // The name of the filter group.
 	Context            []string `form:"context" json:"context"`             // Where the filter should be applied. Specify at least one of home, notifications, public, thread, account.
 	FilterAction       string   `form:"filter_action" json:"filter_action"` // The policy to be applied when the filter is matched. Specify warn or hide.
-	ExpiresIn          int      `form:"expires_in" json:"expires_in"`       // How many seconds from now should the filter expire?
+	ExpiresIn          Seconds  `form:"expires_in" json:"expires_in"`       // How many seconds from now should the filter expire?
 	KeywordsAttributes []struct {
 		Host      string `header:"Host"`
 		Keyword   string `form:"keyword" json:"keyword"`       // A keyword to be added to the newly-created filter group.

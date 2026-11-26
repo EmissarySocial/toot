@@ -25,7 +25,7 @@ type API[AuthToken ScopesGetter] struct {
 	GetAccount_Lists                func(AuthToken, txn.GetAccount_Lists) ([]object.List, error)
 	GetAccount_Followers            func(AuthToken, txn.GetAccount_Followers) ([]object.Account, PageInfo, error)
 	GetAccount_Following            func(AuthToken, txn.GetAccount_Following) ([]object.Account, PageInfo, error)
-	GetAccount_FeaturedTags         func(AuthToken, txn.GetAccount_FeaturedTags) ([]object.Tag, PageInfo, error)
+	GetAccount_FeaturedTags         func(AuthToken, txn.GetAccount_FeaturedTags) ([]object.FeaturedTag, PageInfo, error)
 	PostAccount_Follow              func(AuthToken, txn.PostAccount_Follow) (object.Relationship, error)
 	PostAccount_Unfollow            func(AuthToken, txn.PostAccount_Unfollow) (object.Relationship, error)
 	PostAccount_RemoveFromFollowers func(AuthToken, txn.PostAccount_RemoveFromFollowers) (object.Relationship, error)

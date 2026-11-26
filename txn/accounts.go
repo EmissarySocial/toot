@@ -211,10 +211,10 @@ type PostAccount_Unblock struct {
 // PostAccount_Mute is the input for POST /api/v1/accounts/:id/mute, which returns Relationship.
 // https://docs.joinmastodon.org/methods/accounts/#mute
 type PostAccount_Mute struct {
-	Host          string `header:"Host"`
-	ID            string `param:"id"`
-	Notifications bool   `form:"notifications" json:"notifications"`
-	Duration      bool   `form:"duration" json:"duration"`
+	Host          string  `header:"Host"`
+	ID            string  `param:"id"`
+	Notifications bool    `form:"notifications" json:"notifications"`
+	Duration      Seconds `form:"duration" json:"duration"` // How long to mute for, in seconds; 0 means forever
 }
 
 // PostAccount_Unmute is the input for POST /api/v1/accounts/:id/unmute, which returns Relationship.
